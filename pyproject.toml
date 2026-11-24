@@ -1,0 +1,14 @@
+[project]
+name = "kinema-bench"
+version = "0.1.0"
+description = "Budget-matched LoRA allocation and low-precision evaluation for multimodal manipulation policies"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "torch>=2.4"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kinema_bench*"]
