@@ -1,6 +1,6 @@
 # KinemaBench
 
-Budget-matched adaptation and low-precision evaluation for multimodal
+Region-wise LoRA rank allocation and low-precision evaluation for multimodal
 manipulation policies.
 
 Fine-tuning a vision-language policy onto a new robot embodiment usually means
@@ -9,17 +9,17 @@ repository is built around three things that approach leaves out.
 
 ---
 
-### 1. Rank placement, measured under a fixed budget
+### 1. Rank placement, measured at a fixed trainable-parameter count
 
 A manipulation policy has four functionally distinct regions: vision encoder,
 multimodal projector, language backbone, action head. There is no reason to
 expect a new embodiment stresses them equally. `alloc.py` distributes rank
-across those regions from sensitivity scores, under a **hard equal-parameter
-ceiling** against uniform rank-32.
+across those regions from sensitivity scores, capped at **the same number of
+trainable parameters a uniform rank-32 adapter would use**.
 
 That constraint is the experiment. Without it, a variable-rank configuration
 that wins has only proved that more parameters win, which needed no ablation.
-The allocator asserts it never outspends the uniform budget.
+The allocator asserts it never exceeds that parameter count.
 
 ### 2. The small-update problem under bf16
 
@@ -56,7 +56,7 @@ opposite fixes.
 | File | What it does |
 | --- | --- |
 | `regions.py` | maps a parameter name to one of the four functional regions |
-| `alloc.py` | budget-matched variable-rank allocation, plus the uniform control arm |
+| `alloc.py` | variable-rank allocation at a fixed parameter count, plus the uniform control arm |
 | `precision.py` | fp32 master weights and the silent-erasure probe |
 | `quantize.py` | INT8 and 4-bit NF4 round trips, middle-block depth ablation |
 | `failure_modes.py` | the three-label attributor |
@@ -89,7 +89,7 @@ therefore any result. Nothing in this repository reports a success rate,
 a speedup or a comparison, because none has been run.
 
 Next: wire the rollout harness to a manipulation suite, then run the uniform
-and variable-rank arms at equal budget across BF16, INT8 and NF4.
+and variable-rank arms at an equal parameter count across BF16, INT8 and NF4.
 
 ## References
 
